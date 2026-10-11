@@ -2,6 +2,16 @@ using Vintagestory.API.Common;
 
 #nullable disable
 
+/* Notes
+Calling CollectibleBehaviorEntityDeconstructTool: Add the "EntityDeconstructTool" behavior to item Json
+EntityDeconstructTool - origin is created in Core.cs
+Item that is selected must have the tag "deconstructible" == true
+
+Current goals : 
+edit OnHeldInteractStart to allow for different items
+edit time to deconstruct to be based on Entity
+*/
+
 namespace Vintagestory.GameContent
 {
     public class CollectibleBehaviorEntityDeconstructTool : CollectibleBehavior
@@ -13,12 +23,23 @@ namespace Vintagestory.GameContent
             if (entitySel == null) return;
 
             var attr = entitySel.Entity.Properties.Attributes;
+            /* Original: if attribute deconstuctible is in the JSON and deconstructible is set to true
             if (attr?.IsTrue("deconstructible") == true)
             {
                 handHandling = EnumHandHandling.PreventDefault;
                 handling = EnumHandling.PreventDefault;
                 byEntity.StartAnimation("saw");
             }
+            */
+
+
+            if (slot.Itemstack?.Collectible?.Tool == EnumTool.Saw && attr?.IsTrue("deconstructible") == true)
+            {
+                handHandling = EnumHandHandling.PreventDefault;
+                handling = EnumHandling.PreventDefault;
+                byEntity.StartAnimation("saw");
+            }
+
         }
 
         public override bool OnHeldInteractStep(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
